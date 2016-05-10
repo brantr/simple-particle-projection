@@ -1,0 +1,37 @@
+EXEC   = simple_particle_projection
+
+OPTIMIZE =  -O2 -DATHENA4 -Wno-write-strings 
+#OPTIMIZE += -DSUBSAMPLE
+#OPTIMIZE += -DCORRECT_BOUNDING_BOXES -DPPI #-DPPI_AVE #-DNEW_INTERPOLATION 
+#OPTIMIZE += -DINTERPOLATE_VELOCITIES
+#OPTIMIZE += -DDEBUG=3
+
+OBJS   = main.o read_athena_header.o load_tracers.o
+
+##CXX    = mpicxx
+##CC     = mpicxx
+#CXX    = mpiicpc
+#CC     = mpiicpc
+CXX    = mpicxx
+CC     = mpicxx
+
+INCL   = read_athena_header.hpp load_tracers.hpp
+
+#LIBS   = -lm -lgsl -lgslcblas -lmpich
+LIBS   = -lm -lgsl -lgslcblas -lmpi  #-stdlib=libstdc++
+#LIBS   = -lm -lgsl -lgslcblas -lmpi++
+
+CFLAGS = $(OPTIMIZE) -I/home/brant/code/boost/include #-stdlib=libstdc++
+CXXFLAGS = $(OPTIMIZE) -I/home/brant/code/boost/include #-stdlib=libstdc++
+
+$(EXEC): $(OBJS) 
+	 $(CXX) $(OBJS) $(LIBS) -o $(EXEC)   
+         
+
+$(OBJS): $(INCL) 
+
+.PHONY : clean
+
+clean:
+	 rm -f $(OBJS) $(EXEC)
+
