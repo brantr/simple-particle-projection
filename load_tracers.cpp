@@ -120,53 +120,46 @@ long load_tracers(char fdir[], char filebase[], char fsuffix[], char fdir_out[],
 
     /* read density */
     fread(d,n_tracers,sizeof(float),fp);
+    //printf("d[0] %e\n",d[0]);
+    //printf("d[%ld] %e\n",n_tracers-1,d[n_tracers-1]);
 
     /* read M1 */
     fread(x,n_tracers,sizeof(float),fp);
     for(long tt=0;tt<n_tracers;tt++)
       vx[tt] = x[tt]/d[tt];
-  
+    //printf("vx[0] %e\n",vx[0]);
+    //printf("vx[%ld] %e\n",n_tracers-1,vx[n_tracers-1]);
+
     /* read M2 */
     fread(x,n_tracers,sizeof(float),fp);
     for(long tt=0;tt<n_tracers;tt++)
       vy[tt] = x[tt]/d[tt];
-
+    //printf("vy[0] %e\n",vy[0]);
+    //printf("vy[%ld] %e\n",n_tracers-1,vy[n_tracers-1]);
+    
     /* read M3 */
     fread(x,n_tracers,sizeof(float),fp);
     for(long tt=0;tt<n_tracers;tt++)
       vz[tt] = x[tt]/d[tt];
-
-#ifndef BAROTROPIC
-    /* read E */
-    fread(x,n_tracers,sizeof(float),fp);
-#endif /* BAROTROPIC */
-
-#ifdef MHD
-    /* read B1c */
-    fread(x,n_tracers,sizeof(float),fp);
-
-    /* read B2c */
-    fread(x,n_tracers,sizeof(float),fp);
-
-    /* read B3c */
-    fread(x,n_tracers,sizeof(float),fp);
-#endif /*MHD*/
-
-#if (NSCALARS > 0)
-    for(k=0;k<NSCALARS;k++)
-      fread(x,n_tracers,sizeof(float),fp);
-#endif
+    //printf("vz[0] %e\n",vz[0]);
+    //printf("vz[%ld] %e\n",n_tracers-1,vz[n_tracers-1]);
 
     /* read x1 */
     fread(x,n_tracers,sizeof(float),fp);
-  
+    //printf("x[0] %e\n",x[0]);
+    //printf("x[%ld] %e\n",n_tracers-1,x[n_tracers-1]);
+    
     /* read x2 */
     fread(y,n_tracers,sizeof(float),fp);
-
+    //printf("y[0] %e\n",y[0]);
+    //printf("y[%ld] %e\n",n_tracers-1,y[n_tracers-1]);
+    
     /* read x3 */
     fread(z,n_tracers,sizeof(float),fp);  
-
-    /* Allocate buffer */
+    //printf("z[0] %e\n",z[0]);
+    //printf("z[%ld] %e\n",n_tracers-1,z[n_tracers-1]);
+    
+    //* Allocate buffer */
     if(!(l = (long *)malloc(n_tracers*sizeof(long))))
     {
       printf("Error allocating tracer property buf.\n");
@@ -182,8 +175,15 @@ long load_tracers(char fdir[], char filebase[], char fsuffix[], char fdir_out[],
 
     /*keep only particles with densities above or = threshold*/
     ntd = 0;
+    long id_min = 100000000000;
+    long id_max = -1;
     for(long tt=0;tt<n_tracers;tt++)
     {
+      if(l[tt]<id_min)
+        id_min = l[tt];
+      if(l[tt]>id_max)
+        id_max = l[tt];
+
 
       if( x[tt] < t_min[0])
         t_min[0] = x[tt];
@@ -218,6 +218,8 @@ long load_tracers(char fdir[], char filebase[], char fsuffix[], char fdir_out[],
         ntd++;
       }
     }
+    //printf("t_min %e %e %e t_max %e %e %e\n",t_min[0],t_min[1],t_min[2],t_max[0],t_max[1],t_max[2]);
+    //printf("id_min %ld id_max %ld\n",id_min,id_max);
 
     /*free buffer memory*/
     free(d);
